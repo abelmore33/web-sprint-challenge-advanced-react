@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 // Suggested initial states
 const initialMessage = "";
@@ -13,39 +14,14 @@ export default function AppFunctional(props) {
   const [email, setEmail] = useState(initialEmail);
   const [steps, setSteps] = useState(initialSteps);
   const [index, setIndex] = useState(initialIndex);
+  const [x, setX] = useState(2);
+  const [y, setY] = useState(2);
 
   function getXY() {
     // It it not necessary to have a state to track the coordinates.
     // It's enough to know what index the "B" is at, to be able to calculate them.
-    switch (index) {
-      case 0:
-        return `(1,1)`;
-        break;
-      case 1:
-        return `(2,1)`;
-        break;
-      case 2:
-        return `(3,1)`;
-        break;
-      case 3:
-        return `(1,2)`;
-        break;
-      case 4:
-        return `(2,2)`;
-        break;
-      case 5:
-        return `(3,2)`;
-        break;
-      case 6:
-        return `(1,3)`;
-        break;
-      case 7:
-        return `(2,3)`;
-        break;
-      case 8:
-        return `(3,3)`;
-        break;
-    }
+
+    return `(${x},${y})`;
   }
 
   function getXYMessage() {
@@ -60,6 +36,8 @@ export default function AppFunctional(props) {
     setEmail(initialEmail);
     setSteps(initialSteps);
     setIndex(initialIndex);
+    setX(2);
+    setY(2);
   }
 
   function getNextIndex(direction) {
@@ -67,12 +45,43 @@ export default function AppFunctional(props) {
     // of the "B" would be. If the move is impossible because we are at the edge of the grid,
     // this helper should return the current index unchanged.
     if (direction === "left") {
-      if (index < 0) {
+      if (x < 2) {
         setMessage("You can't go left");
         return index;
       }
       setIndex(index - 1);
       setSteps(steps + 1);
+      setX(x - 1);
+    }
+
+    if (direction === "right") {
+      if (x > 2) {
+        setMessage("You can't go right");
+        return index;
+      }
+      setIndex(index + 1);
+      setSteps(steps + 1);
+      setX(x + 1);
+    }
+
+    if (direction === "up") {
+      if (y < 2) {
+        setMessage("You can't go up");
+        return index;
+      }
+      setIndex(index - 3);
+      setSteps(steps + 1);
+      setY(y - 1);
+    }
+
+    if (direction === "down") {
+      if (y > 2) {
+        setMessage("You can't go down");
+        return index;
+      }
+      setIndex(index + 3);
+      setSteps(steps + 1);
+      setY(y + 1);
     }
   }
 
@@ -84,11 +93,28 @@ export default function AppFunctional(props) {
   }
 
   function onChange(evt) {
-    // You will need this to update the value of the input.
+    evt.preventDefault();
+    setEmail(evt.target.value);
   }
 
   function onSubmit(evt) {
     // Use a POST request to send a payload to the server.
+    evt.preventDefault();
+    const result = {
+      x: x,
+      y: y,
+      steps: steps,
+      email: email,
+    };
+    axios
+      .post("http://localhost:9000/api/result`", result)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        debugger;
+        console.log(err);
+      });
   }
 
   return (
@@ -113,15 +139,27 @@ export default function AppFunctional(props) {
         <button id="left" onClick={move}>
           LEFT
         </button>
-        <button id="up">UP</button>
-        <button id="right">RIGHT</button>
-        <button id="down">DOWN</button>
+        <button id="up" onClick={move}>
+          UP
+        </button>
+        <button id="right" onClick={move}>
+          RIGHT
+        </button>
+        <button id="down" onClick={move}>
+          DOWN
+        </button>
         <button id="reset" onClick={reset}>
           reset
         </button>
       </div>
-      <form>
-        <input id="email" type="email" placeholder="type email"></input>
+      <form onSubmit={onSubmit}>
+        <input
+          id="email"
+          type="email"
+          value={email}
+          placeholder="type email"
+          onChange={onChange}
+        ></input>
         <input id="submit" type="submit"></input>
       </form>
     </div>
