@@ -1,18 +1,51 @@
-import React from 'react'
+import React, { useState } from "react";
 
 // Suggested initial states
-const initialMessage = ''
-const initialEmail = ''
-const initialSteps = 0
-const initialIndex = 4 // the index the "B" is at
+const initialMessage = "";
+const initialEmail = "";
+const initialSteps = 0;
+const initialIndex = 4; // the index the "B" is at
 
 export default function AppFunctional(props) {
   // THE FOLLOWING HELPERS ARE JUST RECOMMENDATIONS.
   // You can delete them and build your own logic from scratch.
+  const [message, setMessage] = useState(initialMessage);
+  const [email, setEmail] = useState(initialEmail);
+  const [steps, setSteps] = useState(initialSteps);
+  const [index, setIndex] = useState(initialIndex);
 
   function getXY() {
     // It it not necessary to have a state to track the coordinates.
     // It's enough to know what index the "B" is at, to be able to calculate them.
+    switch (index) {
+      case 0:
+        return `(1,1)`;
+        break;
+      case 1:
+        return `(2,1)`;
+        break;
+      case 2:
+        return `(3,1)`;
+        break;
+      case 3:
+        return `(1,2)`;
+        break;
+      case 4:
+        return `(2,2)`;
+        break;
+      case 5:
+        return `(3,2)`;
+        break;
+      case 6:
+        return `(1,3)`;
+        break;
+      case 7:
+        return `(2,3)`;
+        break;
+      case 8:
+        return `(3,3)`;
+        break;
+    }
   }
 
   function getXYMessage() {
@@ -23,17 +56,31 @@ export default function AppFunctional(props) {
 
   function reset() {
     // Use this helper to reset all states to their initial values.
+    setMessage(initialMessage);
+    setEmail(initialEmail);
+    setSteps(initialSteps);
+    setIndex(initialIndex);
   }
 
   function getNextIndex(direction) {
     // This helper takes a direction ("left", "up", etc) and calculates what the next index
     // of the "B" would be. If the move is impossible because we are at the edge of the grid,
     // this helper should return the current index unchanged.
+    if (direction === "left") {
+      if (index < 0) {
+        setMessage("You can't go left");
+        return index;
+      }
+      setIndex(index - 1);
+      setSteps(steps + 1);
+    }
   }
 
   function move(evt) {
     // This event handler can use the helper above to obtain a new index for the "B",
     // and change any states accordingly.
+    evt.preventDefault();
+    getNextIndex(evt.target.id);
   }
 
   function onChange(evt) {
@@ -47,32 +94,36 @@ export default function AppFunctional(props) {
   return (
     <div id="wrapper" className={props.className}>
       <div className="info">
-        <h3 id="coordinates">Coordinates (2, 2)</h3>
-        <h3 id="steps">You moved 0 times</h3>
+        <h3 id="coordinates">Coordinates {getXY()}</h3>
+        <h3 id="steps">
+          You moved {steps} {steps < 2 ? "time" : "times"}{" "}
+        </h3>
       </div>
       <div id="grid">
-        {
-          [0, 1, 2, 3, 4, 5, 6, 7, 8].map(idx => (
-            <div key={idx} className={`square${idx === 4 ? ' active' : ''}`}>
-              {idx === 4 ? 'B' : null}
-            </div>
-          ))
-        }
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((idx) => (
+          <div key={idx} className={`square${idx === 4 ? " active" : ""}`}>
+            {idx === 4 ? "B" : null}
+          </div>
+        ))}
       </div>
       <div className="info">
-        <h3 id="message"></h3>
+        <h3 id="message">{message}</h3>
       </div>
       <div id="keypad">
-        <button id="left">LEFT</button>
+        <button id="left" onClick={move}>
+          LEFT
+        </button>
         <button id="up">UP</button>
         <button id="right">RIGHT</button>
         <button id="down">DOWN</button>
-        <button id="reset">reset</button>
+        <button id="reset" onClick={reset}>
+          reset
+        </button>
       </div>
       <form>
         <input id="email" type="email" placeholder="type email"></input>
         <input id="submit" type="submit"></input>
       </form>
     </div>
-  )
+  );
 }
