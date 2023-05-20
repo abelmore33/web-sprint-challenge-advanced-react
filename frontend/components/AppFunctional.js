@@ -24,12 +24,6 @@ export default function AppFunctional(props) {
     return `(${x},${y})`;
   }
 
-  function getXYMessage() {
-    // It it not necessary to have a state to track the "Coordinates (2, 2)" message for the user.
-    // You can use the `getXY` helper above to obtain the coordinates, and then `getXYMessage`
-    // returns the fully constructed string.
-  }
-
   function reset() {
     // Use this helper to reset all states to their initial values.
     setMessage(initialMessage);
@@ -127,8 +121,8 @@ export default function AppFunctional(props) {
       </div>
       <div id="grid">
         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((idx) => (
-          <div key={idx} className={`square${idx === 4 ? " active" : ""}`}>
-            {idx === 4 ? "B" : null}
+          <div key={idx} className={`square${idx === index ? " active" : ""}`}>
+            {idx === index ? "B" : null}
           </div>
         ))}
       </div>
