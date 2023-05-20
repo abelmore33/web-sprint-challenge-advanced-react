@@ -18,7 +18,7 @@ export default function AppFunctional(props) {
   const [message, setMessage] = useState(initialMessage);
   const [email, setEmail] = useState(initialEmail);
   const [steps, setSteps] = useState(initialSteps);
-  const [index, setIndex] = useState(initialIndex);
+  const [index, setIndex] = useState(4);
   const [x, setX] = useState(2);
   const [y, setY] = useState(2);
 
@@ -43,44 +43,49 @@ export default function AppFunctional(props) {
     // This helper takes a direction ("left", "up", etc) and calculates what the next index
     // of the "B" would be. If the move is impossible because we are at the edge of the grid,
     // this helper should return the current index unchanged.
+
     if (direction === "left") {
-      if (x < 2) {
+      if (x <= 1) {
         setMessage("You can't go left");
         return index;
       }
+      setX(x - 1);
       setIndex(index - 1);
       setSteps(steps + 1);
-      setX(x - 1);
+      setMessage("");
     }
 
     if (direction === "right") {
-      if (x > 2) {
+      if (x >= 3) {
         setMessage("You can't go right");
         return index;
       }
       setIndex(index + 1);
       setSteps(steps + 1);
       setX(x + 1);
+      setMessage("");
     }
 
     if (direction === "up") {
-      if (y < 2) {
+      if (y <= 1) {
         setMessage("You can't go up");
         return index;
       }
       setIndex(index - 3);
       setSteps(steps + 1);
       setY(y - 1);
+      setMessage("");
     }
 
     if (direction === "down") {
-      if (y > 2) {
+      if (y >= 3) {
         setMessage("You can't go down");
         return index;
       }
       setIndex(index + 3);
       setSteps(steps + 1);
       setY(y + 1);
+      setMessage("");
     }
   }
 
@@ -106,9 +111,14 @@ export default function AppFunctional(props) {
       email: email,
     };
     axios
-      .post("http://localhost:9000/api/result`", result)
+      .post("http://localhost:9000/api/result", result)
       .then((res) => {
         console.log(res);
+        const emailSplit = email.split("@");
+        setMessage(
+          emailSplit[0] + " " + `win # ${Math.floor(Math.random() * 301)}`
+        );
+        setEmail("");
       })
       .catch((err) => {
         debugger;
@@ -130,7 +140,10 @@ export default function AppFunctional(props) {
         ))}
       </div>
       <div className="info">
-        <h3 id="message">{message}</h3>
+        <h3 id="message">
+          {message}
+          {schema.email}
+        </h3>
       </div>
       <div id="keypad">
         <button id="left" onClick={move}>
