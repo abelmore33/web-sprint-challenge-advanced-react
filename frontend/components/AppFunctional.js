@@ -3,7 +3,10 @@ import axios from "axios";
 import * as yup from "yup";
 
 const schema = yup.object().shape({
-  email: yup.string().required("Ouch: email is required"),
+  email: yup
+    .string()
+    .required("Ouch: email is required")
+    .email("Ouch: email must be a valid email"),
 });
 
 // Suggested initial states
@@ -21,6 +24,7 @@ export default function AppFunctional(props) {
   const [index, setIndex] = useState(4);
   const [x, setX] = useState(2);
   const [y, setY] = useState(2);
+  const [winNum, setWinNum] = useState("");
 
   function getXY() {
     // It it not necessary to have a state to track the coordinates.
@@ -114,14 +118,18 @@ export default function AppFunctional(props) {
       .post("http://localhost:9000/api/result", result)
       .then((res) => {
         console.log(res);
+        switch (message) {
+          case "You can't go down":
+            setWinNum("#43");
+            break;
+        }
+      })
+      .then((res) => {
         const emailSplit = email.split("@");
-        setMessage(
-          emailSplit[0] + " " + `win # ${Math.floor(Math.random() * 301)}`
-        );
+        setMessage(`${emailSplit[0]} win ${winNum}`);
         setEmail("");
       })
       .catch((err) => {
-        debugger;
         console.log(err);
       });
   }
