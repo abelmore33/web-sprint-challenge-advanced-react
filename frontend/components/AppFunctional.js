@@ -5,8 +5,8 @@ import * as yup from "yup";
 const schema = yup.object().shape({
   email: yup
     .string()
-    .required("Ouch: email is required")
-    .email("Ouch: email must be a valid email"),
+    .email("Ouch: email must be a valid email")
+    .required("Ouch: email is required"),
 });
 
 // Suggested initial states
@@ -25,6 +25,14 @@ export default function AppFunctional(props) {
   const [x, setX] = useState(2);
   const [y, setY] = useState(2);
   const [winNum, setWinNum] = useState("");
+
+  const setErrors = (name, value) => {
+    yup
+      .reach(schema, name)
+      .validate(value)
+      .then(() => setEmail(""))
+      .catch((err) => setMessage(err.errors[0]));
+  };
 
   function getXY() {
     // It it not necessary to have a state to track the coordinates.
@@ -117,20 +125,20 @@ export default function AppFunctional(props) {
     axios
       .post("http://localhost:9000/api/result", result)
       .then((res) => {
-        console.log(res);
         switch (message) {
           case "You can't go down":
             setWinNum("#43");
             break;
         }
+        setErrors("email", email);
+        setMessage;
       })
-      .then((res) => {
-        const emailSplit = email.split("@");
-        setMessage(`${emailSplit[0]} win ${winNum}`);
-        setEmail("");
-      })
+      // .then((res) => {
+      //   const emailSplit = email.split("@");
+      //   setMessage(`${emailSplit[0]} win ${winNum}`);
+      // })
       .catch((err) => {
-        console.log(err);
+        setMessage(err.response.data.message);
       });
   }
 
