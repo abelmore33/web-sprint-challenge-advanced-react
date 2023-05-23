@@ -113,6 +113,20 @@ export default function AppFunctional(props) {
     setEmail(evt.target.value);
   }
 
+  function winNumber() {
+    if (x === 2 && y === 2) {
+      return "#73";
+    } else if (message === "You can't go down" && x === 2 && y === 3) {
+      return "#43";
+    } else if (x === 2 && y === 1) {
+      return "#31";
+    } else if (x === 1 && y === 2) {
+      return "#29";
+    } else if (x === 3 && y === 1) {
+      return "#49";
+    }
+  }
+
   function onSubmit(evt) {
     // Use a POST request to send a payload to the server.
     evt.preventDefault();
@@ -125,18 +139,11 @@ export default function AppFunctional(props) {
     axios
       .post("http://localhost:9000/api/result", result)
       .then((res) => {
-        switch (message) {
-          case "You can't go down":
-            setWinNum("#43");
-            break;
-        }
         setErrors("email", email);
-        setMessage;
+        const emailSplit = email.split("@");
+        setMessage(`${emailSplit[0]} win ${winNumber()} `);
+        setEmail("");
       })
-      // .then((res) => {
-      //   const emailSplit = email.split("@");
-      //   setMessage(`${emailSplit[0]} win ${winNum}`);
-      // })
       .catch((err) => {
         setMessage(err.response.data.message);
       });
@@ -146,7 +153,9 @@ export default function AppFunctional(props) {
     <div id="wrapper" className={props.className}>
       <div className="info">
         <h3 id="coordinates">Coordinates {getXY()}</h3>
-        <h3 id="steps">You moved {steps} times</h3>
+        <h3 id="steps">
+          You moved {steps} {steps === 1 ? "time" : "times"}
+        </h3>
       </div>
       <div id="grid">
         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((idx) => (
